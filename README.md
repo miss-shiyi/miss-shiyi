@@ -1,6 +1,7 @@
 ### Hi there 👋
+<img src="https://github-readme-stats.vercel.app/api?username=miss-shiyi&show_icons=true" alt="logo" height="160" align="right" style="margin: 5px; margin-bottom: 20px;" />
 
-时宜，墨宝非宝所著古风向现代言情小说《一生一世，美人骨》中女主角。
+墨宝非宝所著古风向现代言情小说《一生一世，美人骨》中女主角。
 
 如果有个人带着两世的记忆深爱着你，多幸福。时宜对周生辰就是如此……
 
@@ -13,6 +14,9 @@
 而这一次，是在广州机场。虽然时光改变了他的音容，她仍然一眼认出了他。
 
 她独自带着那段前世的记忆来到他身边，他却对她茫然不知。
+
+<img src="https://github-profile-trophy.vercel.app/?username=miss-shiyi&theme=flat&column=7" alt="logo" height="160" align="center" style="margin: auto; margin-bottom: 20px;" />
+
 
 "周、生、辰"，单是念着这三个字，就能让她的心底涌出最温柔的情绪。
 

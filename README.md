@@ -1,5 +1,8 @@
 ### Hi there 👋
 
+时宜，墨宝非宝所著古风向现代言情小说《一生一世，美人骨》中女主角。
+如果有个人带着两世的记忆深爱着你，多幸福。时宜对周生辰就是如此……
+
 <!--
 **missshiyi/missshiyi** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 

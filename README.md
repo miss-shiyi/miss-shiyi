@@ -12,11 +12,11 @@ My personal blog using issues and GitHub Actions (随意转载，无需署名)
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/92)--2022-02-17
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/43)--2021-12-12
 ## 最近更新
+- [周国平](https://github.com/miss-shiyi/miss-shiyi/issues/180)--2022-07-25
 - [所有](https://github.com/miss-shiyi/miss-shiyi/issues/179)--2022-07-24
 - [友情链接](https://github.com/miss-shiyi/miss-shiyi/issues/178)--2022-07-23
 - [曾国藩 ​](https://github.com/miss-shiyi/miss-shiyi/issues/177)--2022-07-23
 - [肯·凯西  ​](https://github.com/miss-shiyi/miss-shiyi/issues/176)--2022-07-22
-- [陈果 ​](https://github.com/miss-shiyi/miss-shiyi/issues/175)--2022-07-21
 ## Swift
 - [iOS15的适配](https://github.com/miss-shiyi/miss-shiyi/issues/6)--2021-09-30
 - [swift的属性观察者](https://github.com/miss-shiyi/miss-shiyi/issues/5)--2021-09-29
@@ -68,13 +68,14 @@ My personal blog using issues and GitHub Actions (随意转载，无需署名)
 </details>
 
 ## 文摘
+- [周国平](https://github.com/miss-shiyi/miss-shiyi/issues/180)--2022-07-25
 - [所有](https://github.com/miss-shiyi/miss-shiyi/issues/179)--2022-07-24
 - [王小波《黄金时代》](https://github.com/miss-shiyi/miss-shiyi/issues/173)--2022-07-06
 - [ 张子选 ​](https://github.com/miss-shiyi/miss-shiyi/issues/172)--2022-06-30
 - [齐奥朗](https://github.com/miss-shiyi/miss-shiyi/issues/171)--2022-06-28
-- [东野圭吾 ​](https://github.com/miss-shiyi/miss-shiyi/issues/170)--2022-06-28
 <details><summary>显示更多</summary>
 
+- [东野圭吾 ​](https://github.com/miss-shiyi/miss-shiyi/issues/170)--2022-06-28
 - [白先勇《白先勇散文精编》 ](https://github.com/miss-shiyi/miss-shiyi/issues/169)--2022-06-24
 - [亦舒 ​](https://github.com/miss-shiyi/miss-shiyi/issues/166)--2022-06-21
 - [莫言《晚熟的人》 ​](https://github.com/miss-shiyi/miss-shiyi/issues/165)--2022-06-17

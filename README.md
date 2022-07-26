@@ -1,5 +1,4 @@
-## Gitblog
-My personal blog using issues and GitHub Actions (随意转载，无需署名)
+## 不属于任何人，也不拥有任何人，减少期待，好好生活，此程山高路远，我留给自己。 
 [RSS Feed](https://raw.githubusercontent.com/miss-shiyi/miss-shiyi/master/feed.xml)
 ## 友情链接
 | Name | Link | Desc | 

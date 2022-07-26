@@ -8,8 +8,7 @@ from github import Github
 from feedgen.feed import FeedGenerator
 from lxml.etree import CDATA
 
-MD_HEAD = """## Gitblog
-My personal blog using issues and GitHub Actions (随意转载，无需署名)
+MD_HEAD = """## 不属于任何人，也不拥有任何人，减少期待，好好生活，此程山高路远，我留给自己。 
 [RSS Feed](https://raw.githubusercontent.com/{repo_name}/master/feed.xml)
 """
 

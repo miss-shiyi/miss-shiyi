@@ -11,11 +11,11 @@
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/92)--2022-02-17
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/43)--2021-12-12
 ## 最近更新
+- [百年孤独](https://github.com/miss-shiyi/miss-shiyi/issues/188)--2022-08-03
 - [陀思妥耶夫斯基](https://github.com/miss-shiyi/miss-shiyi/issues/187)--2022-08-01
 - [破局](https://github.com/miss-shiyi/miss-shiyi/issues/186)--2022-07-31
 - [不炫耀](https://github.com/miss-shiyi/miss-shiyi/issues/185)--2022-07-30
 - [刘同](https://github.com/miss-shiyi/miss-shiyi/issues/184)--2022-07-28
-- [保罗·柯艾略](https://github.com/miss-shiyi/miss-shiyi/issues/183)--2022-07-27
 ## Swift
 - [iOS15的适配](https://github.com/miss-shiyi/miss-shiyi/issues/6)--2021-09-30
 - [swift的属性观察者](https://github.com/miss-shiyi/miss-shiyi/issues/5)--2021-09-29
@@ -203,13 +203,14 @@
 ## 计算机知识
 - [鲁迅 ​](https://github.com/miss-shiyi/miss-shiyi/issues/40)--2021-12-09
 ## 随笔
+- [百年孤独](https://github.com/miss-shiyi/miss-shiyi/issues/188)--2022-08-03
 - [破局](https://github.com/miss-shiyi/miss-shiyi/issues/186)--2022-07-31
 - [天空](https://github.com/miss-shiyi/miss-shiyi/issues/181)--2022-07-26
 - [《从事物的生命里》](https://github.com/miss-shiyi/miss-shiyi/issues/161)--2022-06-12
 - [轻轻地](https://github.com/miss-shiyi/miss-shiyi/issues/158)--2022-06-09
-- [一个人](https://github.com/miss-shiyi/miss-shiyi/issues/154)--2022-05-25
 <details><summary>显示更多</summary>
 
+- [一个人](https://github.com/miss-shiyi/miss-shiyi/issues/154)--2022-05-25
 - [有着坚定方向的人](https://github.com/miss-shiyi/miss-shiyi/issues/95)--2022-02-23
 - [戴佩妮《怎样》 ​](https://github.com/miss-shiyi/miss-shiyi/issues/90)--2022-02-15
 - [你不能要求没有风暴的海洋。那不是海。是泥潭——毕淑敏](https://github.com/miss-shiyi/miss-shiyi/issues/72)--2022-01-18

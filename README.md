@@ -11,11 +11,11 @@
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/92)--2022-02-17
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/43)--2021-12-12
 ## 最近更新
+- [雨](https://github.com/miss-shiyi/miss-shiyi/issues/193)--2022-08-19
 - [《旅客》](https://github.com/miss-shiyi/miss-shiyi/issues/192)--2022-08-11
 - [雨](https://github.com/miss-shiyi/miss-shiyi/issues/191)--2022-08-10
 - [《以自己喜欢的方式过一生》](https://github.com/miss-shiyi/miss-shiyi/issues/190)--2022-08-09
 - [三毛](https://github.com/miss-shiyi/miss-shiyi/issues/189)--2022-08-05
-- [百年孤独](https://github.com/miss-shiyi/miss-shiyi/issues/188)--2022-08-03
 ## Swift
 - [iOS15的适配](https://github.com/miss-shiyi/miss-shiyi/issues/6)--2021-09-30
 - [swift的属性观察者](https://github.com/miss-shiyi/miss-shiyi/issues/5)--2021-09-29
@@ -204,13 +204,14 @@
 ## 计算机知识
 - [鲁迅 ​](https://github.com/miss-shiyi/miss-shiyi/issues/40)--2021-12-09
 ## 随笔
+- [雨](https://github.com/miss-shiyi/miss-shiyi/issues/193)--2022-08-19
 - [《旅客》](https://github.com/miss-shiyi/miss-shiyi/issues/192)--2022-08-11
 - [雨](https://github.com/miss-shiyi/miss-shiyi/issues/191)--2022-08-10
 - [《以自己喜欢的方式过一生》](https://github.com/miss-shiyi/miss-shiyi/issues/190)--2022-08-09
 - [百年孤独](https://github.com/miss-shiyi/miss-shiyi/issues/188)--2022-08-03
-- [破局](https://github.com/miss-shiyi/miss-shiyi/issues/186)--2022-07-31
 <details><summary>显示更多</summary>
 
+- [破局](https://github.com/miss-shiyi/miss-shiyi/issues/186)--2022-07-31
 - [天空](https://github.com/miss-shiyi/miss-shiyi/issues/181)--2022-07-26
 - [《从事物的生命里》](https://github.com/miss-shiyi/miss-shiyi/issues/161)--2022-06-12
 - [轻轻地](https://github.com/miss-shiyi/miss-shiyi/issues/158)--2022-06-09

@@ -11,11 +11,11 @@
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/92)--2022-02-17
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/43)--2021-12-12
 ## 最近更新
+- [封](https://github.com/miss-shiyi/miss-shiyi/issues/196)--2022-08-30
 - [《拆掉思维里的墙》](https://github.com/miss-shiyi/miss-shiyi/issues/195)--2022-08-26
 - [晴天](https://github.com/miss-shiyi/miss-shiyi/issues/194)--2022-08-26
 - [雨](https://github.com/miss-shiyi/miss-shiyi/issues/193)--2022-08-19
 - [《旅客》](https://github.com/miss-shiyi/miss-shiyi/issues/192)--2022-08-11
-- [雨](https://github.com/miss-shiyi/miss-shiyi/issues/191)--2022-08-10
 ## Swift
 - [iOS15的适配](https://github.com/miss-shiyi/miss-shiyi/issues/6)--2021-09-30
 - [swift的属性观察者](https://github.com/miss-shiyi/miss-shiyi/issues/5)--2021-09-29

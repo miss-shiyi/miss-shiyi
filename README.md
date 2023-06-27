@@ -11,11 +11,11 @@
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/92)--2022-02-17
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/43)--2021-12-12
 ## 最近更新
-- [打断你的腿](https://github.com/miss-shiyi/miss-shiyi/issues/206)--2022-11-22
-- [天晴](https://github.com/miss-shiyi/miss-shiyi/issues/205)--2022-11-19
-- [晚安](https://github.com/miss-shiyi/miss-shiyi/issues/204)--2022-11-14
-- [天气](https://github.com/miss-shiyi/miss-shiyi/issues/203)--2022-10-21
-- [雨](https://github.com/miss-shiyi/miss-shiyi/issues/202)--2022-10-18
+- [真正厉害的人，都在打磨这4种能力](https://github.com/miss-shiyi/miss-shiyi/issues/212)--2023-06-27
+- [分配问题](https://github.com/miss-shiyi/miss-shiyi/issues/211)--2023-06-27
+- [要找个这样的对象](https://github.com/miss-shiyi/miss-shiyi/issues/210)--2022-12-15
+- [短命婚姻](https://github.com/miss-shiyi/miss-shiyi/issues/209)--2022-12-15
+- [哈哈](https://github.com/miss-shiyi/miss-shiyi/issues/208)--2022-12-13
 ## Swift
 - [iOS15的适配](https://github.com/miss-shiyi/miss-shiyi/issues/6)--2021-09-30
 - [swift的属性观察者](https://github.com/miss-shiyi/miss-shiyi/issues/5)--2021-09-29
@@ -34,13 +34,16 @@
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/92)--2022-02-17
 - [村上春树 ​](https://github.com/miss-shiyi/miss-shiyi/issues/43)--2021-12-12
 ## 书籍
+- [真正厉害的人，都在打磨这4种能力](https://github.com/miss-shiyi/miss-shiyi/issues/212)--2023-06-27
+- [分配问题](https://github.com/miss-shiyi/miss-shiyi/issues/211)--2023-06-27
+- [短命婚姻](https://github.com/miss-shiyi/miss-shiyi/issues/209)--2022-12-15
 - [《山居笔记》](https://github.com/miss-shiyi/miss-shiyi/issues/168)--2022-06-23
 - [贾平凹《万物有灵》](https://github.com/miss-shiyi/miss-shiyi/issues/167)--2022-06-22
+<details><summary>显示更多</summary>
+
 - [《小王子》](https://github.com/miss-shiyi/miss-shiyi/issues/152)--2022-05-18
 - [《提琴与坟墓》](https://github.com/miss-shiyi/miss-shiyi/issues/151)--2022-05-16
 - [汪民安《论爱欲》](https://github.com/miss-shiyi/miss-shiyi/issues/147)--2022-05-10
-<details><summary>显示更多</summary>
-
 - [蔡澜《不如任性过生活》 ​](https://github.com/miss-shiyi/miss-shiyi/issues/135)--2022-04-13
 - [狄更斯《远大前程》](https://github.com/miss-shiyi/miss-shiyi/issues/121)--2022-03-28
 - [《王朔文集》王朔 ​](https://github.com/miss-shiyi/miss-shiyi/issues/120)--2022-03-26
@@ -67,13 +70,14 @@
 </details>
 
 ## 文摘
+- [哈哈](https://github.com/miss-shiyi/miss-shiyi/issues/208)--2022-12-13
 - [《太阳正在加载》 ​](https://github.com/miss-shiyi/miss-shiyi/issues/198)--2022-09-08
 - [封2](https://github.com/miss-shiyi/miss-shiyi/issues/197)--2022-09-01
 - [《拆掉思维里的墙》](https://github.com/miss-shiyi/miss-shiyi/issues/195)--2022-08-26
 - [三毛](https://github.com/miss-shiyi/miss-shiyi/issues/189)--2022-08-05
-- [陀思妥耶夫斯基](https://github.com/miss-shiyi/miss-shiyi/issues/187)--2022-08-01
 <details><summary>显示更多</summary>
 
+- [陀思妥耶夫斯基](https://github.com/miss-shiyi/miss-shiyi/issues/187)--2022-08-01
 - [不炫耀](https://github.com/miss-shiyi/miss-shiyi/issues/185)--2022-07-30
 - [刘同](https://github.com/miss-shiyi/miss-shiyi/issues/184)--2022-07-28
 - [保罗·柯艾略](https://github.com/miss-shiyi/miss-shiyi/issues/183)--2022-07-27
@@ -207,13 +211,16 @@
 ## 计算机知识
 - [鲁迅 ​](https://github.com/miss-shiyi/miss-shiyi/issues/40)--2021-12-09
 ## 随笔
+- [分配问题](https://github.com/miss-shiyi/miss-shiyi/issues/211)--2023-06-27
+- [要找个这样的对象](https://github.com/miss-shiyi/miss-shiyi/issues/210)--2022-12-15
+- [天气不错](https://github.com/miss-shiyi/miss-shiyi/issues/207)--2022-12-10
 - [打断你的腿](https://github.com/miss-shiyi/miss-shiyi/issues/206)--2022-11-22
 - [天晴](https://github.com/miss-shiyi/miss-shiyi/issues/205)--2022-11-19
+<details><summary>显示更多</summary>
+
 - [天气](https://github.com/miss-shiyi/miss-shiyi/issues/203)--2022-10-21
 - [雨](https://github.com/miss-shiyi/miss-shiyi/issues/202)--2022-10-18
 - [早安](https://github.com/miss-shiyi/miss-shiyi/issues/201)--2022-09-22
-<details><summary>显示更多</summary>
-
 - [夜风微凉](https://github.com/miss-shiyi/miss-shiyi/issues/200)--2022-09-20
 - [晴朗](https://github.com/miss-shiyi/miss-shiyi/issues/199)--2022-09-19
 - [晴天](https://github.com/miss-shiyi/miss-shiyi/issues/194)--2022-08-26

@@ -29,13 +29,13 @@ jobs:
           pip install requests
           python sync.py
 
-      - name: Push to Main Repo (BACKUP & README)
+      - name: Push to Main Repo
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md BACKUP/
           if git diff --staged --quiet; then
-            echo "No changes for main repo"
+            echo "No changes"
           else
             git commit -m "chore: update backup and readme"
             git push
@@ -45,19 +45,18 @@ jobs:
         env:
           G_T: ${{ secrets.G_T }}
         run: |
-          # 克隆 Wiki 仓库
-          git clone https://x-access-token:${G_T}@github.com/${{ github.repository }}.wiki.git wiki_repo
-          # 清除旧文件并存入新文件
-          rm -rf wiki_repo/*.md
-          cp -r wiki_temp/*.md wiki_repo/
-          # 提交到 Wiki
+          git clone "https://x-access-token:${G_T}@github.com/${{ github.repository }}.wiki.git" wiki_repo
           cd wiki_repo
+          rm -rf ./*.md
+          cp -r ../wiki_temp/*.md .
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           if git diff --staged --quiet; then
             echo "No changes for wiki"
           else
-            git commit -m "docs: sync issues to wiki"
-            git push origin master || git push origin main
+            git commit -m "docs: sync wiki"
+            # 自动检测分支并推送
+            BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+            git push origin $BRANCH
           fi

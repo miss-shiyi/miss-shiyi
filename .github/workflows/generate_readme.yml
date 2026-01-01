@@ -12,42 +12,42 @@ on:
     paths:
       - main.py
 
-env:
-  GITHUB_NAME: miss-shiyi
-  GITHUB_EMAIL: miss-shiyi@outlook.com
-
 jobs:
   sync:
     name: Generate README
     runs-on: ubuntu-latest
-    if: github.repository_owner_id == github.event.issue.user.id || github.event_name == 'push'
+    # 只要是作者本人触发，或者由 Push 触发就执行
+    if: github.event.issue.user.login == github.repository_owner || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.8
-          cache: pip
-          cache-dependency-path: "requirements.txt"
+          python-version: '3.10'
+          cache: 'pip'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m venv venv
-          source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Generate new md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          source venv/bin/activate
-          python main.py ${{ secrets.GITHUB_TOKEN }} ${{ github.repository }} --issue_number '${{ github.event.issue.number }}'
+          python main.py "$GH_TOKEN" "${{ github.repository }}" --issue_number '${{ github.event.issue.number }}'
 
       - name: Push README
         run: |
-          git config --local user.email "${{ env.GITHUB_EMAIL }}"
-          git config --local user.name "${{ env.GITHUB_EMAIL }}"
-          git add BACKUP/*.md
+          git config --local user.email "miss-shiyi@outlook.com"
+          git config --local user.name "miss-shiyi"
+          git add README.md BACKUP/*.md feed.xml
+          # 如果没有变化则不提交
           git commit -a -m 'update new blog' || echo "nothing to commit"
           git push || echo "nothing to push"
-

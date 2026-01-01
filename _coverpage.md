@@ -1,12 +1,8 @@
-# miss-shiyi's Blog <small>v1.0</small>
+# 拾遗集 <small>Digital Garden</small>
 
-> 拾遗，亦是拾起那些被遗忘的瞬间。
-
-- 自动化脚本驱动
-- Issue 即博文
-- 极简主义美学
+> 这里的每一篇文章，都是一段被拾起的时光。
 
 [GitHub](https://github.com/miss-shiyi)
-[Get Started](#README)
+[开始阅读](#README)
 
-![color](https://dispenser.edgetag.io/v1/background/gradient?colors=000000,222222)
+![color](https://dispenser.edgetag.io/v1/background/gradient?colors=000000,434343)

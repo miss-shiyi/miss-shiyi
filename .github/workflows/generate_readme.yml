@@ -1,54 +1,162 @@
-name: Generate GitBlog README
+# -*- coding: utf-8 -*-
+import argparse
+import os
+import re
+from datetime import timezone
+from github import Github, Auth, GithubException
+from marko.ext.gfm import gfm as marko
+from feedgen.feed import FeedGenerator
+from lxml.etree import CDATA
 
-on:
-  workflow_dispatch:
-  issues:
-    types: [opened, edited]
-  issue_comment:
-    types: [created, edited]
-  push:
-    branches:
-      - master
-    paths:
-      - main.py
+# --- 视觉与图标配置 ---
+MD_HEAD = """# 🌙 miss-shiyi's Digital Garden
 
-jobs:
-  sync:
-    name: Generate README
-    runs-on: ubuntu-latest
-    # 只要是作者本人触发，或者由 Push 触发就执行
-    if: github.event.issue.user.login == github.repository_owner || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+> **"不属于任何人，也不拥有任何人，减少期待，好好生活，此程山高路远，我留给自己。"**
+
+![Status](https://img.shields.io/badge/Status-Automated-00FFD1?style=flat-square&logo=github-actions&logoColor=white) 
+![Articles](https://img.shields.io/badge/Archive-Digital_Artifacts-white?style=flat-square&logo=read-the-docs&logoColor=black)
+![RSS](https://img.shields.io/badge/RSS-Feed-orange?style=flat-square&logo=rss&logoColor=white)
+
+---
+"""
+
+# 为不同 Label 匹配图标的字典（你可以根据自己的标签名继续添加）
+LABEL_ICONS = {
+    "Python": "🐍",
+    "Life": "🌱",
+    "Automation": "🤖",
+    "Thought": "💡",
+    "Code": "💻",
+    "Travel": "🏖️",
+    "TODO": "📝",
+}
+
+BACKUP_DIR = "BACKUP"
+ANCHOR_NUMBER = 5
+TOP_ISSUES_LABELS = ["Top"]
+TODO_ISSUES_LABELS = ["TODO"]
+FRIENDS_LABELS = ["Friends"]
+IGNORE_LABELS = FRIENDS_LABELS + TOP_ISSUES_LABELS + TODO_ISSUES_LABELS
+
+def get_me(gh):
+    me = os.getenv("GITHUB_NAME")
+    return me if me else gh.get_user().login
+
+def format_time(time):
+    # 转换为更加文艺的格式: Oct 24, 2023
+    return time.strftime("%b %d, %Y")
+
+def add_issue_info(issue, md):
+    time_str = format_time(issue.created_at)
+    # 使用代码块包裹日期，增加科技感
+    md.write(f"- `[{time_str}]` &nbsp; **[{issue.title}]({issue.html_url})** \n")
+
+def add_md_label(repo, md_path, me):
+    labels = repo.get_labels()
+    with open(md_path, "a+", encoding="utf-8") as md:
+        for label in labels:
+            if label.name in IGNORE_LABELS:
+                continue
+
+            issues = repo.get_issues(labels=[label], state="open", sort="created", direction="desc")
+            if issues.totalCount == 0:
+                continue
+
+            # 匹配图标
+            icon = LABEL_ICONS.get(label.name, "🔖")
+            md.write(f"### {icon} {label.name}\n\n")
+            
+            for i, issue in enumerate(issues):
+                if issue.user.login != me or issue.pull_request:
+                    continue
+                if i == ANCHOR_NUMBER:
+                    md.write("<details><summary><i>✨ View More Artifacts...</i></summary>\n\n")
+                add_issue_info(issue, md)
+            
+            if issues.totalCount > ANCHOR_NUMBER:
+                md.write("\n</details>\n")
+            md.write("\n")
+
+def add_md_top(repo, md_path, me):
+    top_issues = repo.get_issues(labels=TOP_ISSUES_LABELS, state="open")
+    if top_issues.totalCount > 0:
+        with open(md_path, "a+", encoding="utf-8") as md:
+            md.write("## 📌 Featured / 置顶文章\n")
+            for issue in top_issues:
+                if issue.user.login == me:
+                    md.write(f"- **[{issue.title}]({issue.html_url})** 🌟\n")
+            md.write("\n---\n")
+
+def add_md_recent(repo, md_path, me, limit=5):
+    with open(md_path, "a+", encoding="utf-8") as md:
+        md.write("## 🕒 Recent Updates / 最近更新\n")
+        issues = repo.get_issues(state="open", sort="updated")
+        count = 0
+        for issue in issues:
+            if issue.user.login == me and not issue.pull_request:
+                add_issue_info(issue, md)
+                count += 1
+                if count >= limit: break
+        md.write("\n---\n")
+
+def add_md_footer(md_path, me):
+    with open(md_path, "a+", encoding="utf-8") as md:
+        md.write("\n---\n")
+        md.write(f"<p align='center'><i>Generated with ❤️ by <a href='https://github.com/{me}/{me}'>Automation Bot</a></i></p>\n")
+        md.write(f"<p align='center'><img src='https://profile-counter.glitch.me/{me}/count.svg' alt='Views'></p>\n")
+
+def generate_rss_feed(repo, filename, me):
+    fg = FeedGenerator()
+    fg.id(repo.html_url)
+    fg.title(f"{me}'s Digital Garden")
+    fg.author({'name': me})
+    fg.link(href=repo.html_url, rel='alternate')
+    for issue in repo.get_issues(state="open"):
+        if not issue.body or issue.user.login != me or issue.pull_request:
+            continue
+        fe = fg.add_entry()
+        fe.id(issue.html_url)
+        fe.title(issue.title)
+        fe.link(href=issue.html_url)
+        fe.published(issue.created_at.replace(tzinfo=timezone.utc))
+        content = "".join(c for c in issue.body if ord(c) >= 32)
+        fe.content(CDATA(marko.convert(content)), type="html")
+    fg.atom_file(filename)
+
+def main(token, repo_name, issue_number=None):
+    auth = Auth.Token(token)
+    gh = Github(auth=auth)
+    me = get_me(gh)
+    repo = gh.get_repo(repo_name)
     
-    permissions:
-      contents: write
+    md_path = "README.md"
+    # 初始化 Header
+    with open(md_path, "w", encoding="utf-8") as md:
+        md.write(MD_HEAD)
+    
+    # 渲染各个版块
+    add_md_top(repo, md_path, me)
+    add_md_recent(repo, md_path, me)
+    
+    with open(md_path, "a+", encoding="utf-8") as md:
+        md.write("## 📂 Collections / 文章分类\n\n")
+    
+    add_md_label(repo, md_path, me)
+    add_md_footer(md_path, me)
+    
+    generate_rss_feed(repo, "feed.xml", me)
+    
+    # 备份 Issue
+    if not os.path.exists(BACKUP_DIR): os.mkdir(BACKUP_DIR)
+    for issue in repo.get_issues(state="open"):
+        if issue.user.login == me and not issue.pull_request:
+            safe_title = re.sub(r'[\\/:*?"<>|]', '_', issue.title)
+            with open(os.path.join(BACKUP_DIR, f"{issue.number}_{safe_title}.md"), "w", encoding="utf-8") as f:
+                f.write(f"# [{issue.title}]({issue.html_url})\n\n{issue.body}")
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Generate new md
-        env:
-          GH_TOKEN: ${{ secrets.G_T }}
-          GITHUB_NAME: miss-shiyi
-        run: |
-          python main.py "$GH_TOKEN" "${{ github.repository }}" --issue_number '${{ github.event.issue.number }}'
-
-      - name: Push README
-        run: |
-          git config --local user.email "miss-shiyi@outlook.com"
-          git config --local user.name "miss-shiyi"
-          git add README.md BACKUP/*.md feed.xml
-          # 如果没有变化则不提交
-          git commit -a -m 'update new blog' || echo "nothing to commit"
-          git push || echo "nothing to push"
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("github_token"); parser.add_argument("repo_name")
+    parser.add_argument("--issue_number", default=None)
+    args = parser.parse_args()
+    main(args.github_token, args.repo_name, args.issue_number)

@@ -1,4 +1,1 @@
 PyGithub
-feedgen
-marko
-lxml

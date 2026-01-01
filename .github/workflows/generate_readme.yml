@@ -39,7 +39,7 @@ jobs:
 
       - name: Generate new md
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.G_T }}
           GITHUB_NAME: miss-shiyi
         run: |
           python main.py "$GH_TOKEN" "${{ github.repository }}" --issue_number '${{ github.event.issue.number }}'

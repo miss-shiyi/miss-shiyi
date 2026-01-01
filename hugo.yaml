@@ -2,56 +2,18 @@ baseURL: "https://miss-shiyi.github.io/miss-shiyi/"
 languageCode: "zh-cn"
 title: "拾遗集"
 theme: "hugo-theme-stack"
-
-# 强制指定默认语言，解决 404 渲染时的 context 丢失问题
 defaultContentLanguage: "zh-cn"
 
+# 基础标记配置
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    style: "github-dark"
+
+# 这里的 params 只留最简单的，不写嵌套的对象
 params:
   mainSections:
     - posts
   featuredImageField: "image"
-  
-  # 侧边栏配置：显式嵌套
-  sidebar:
-    enabled: true
-    avatar: "https://github.com/miss-shiyi.png"
-    title: "漼时宜"
-    subtitle: "不属于任何人，也不拥有任何人。"
-    showArchive: true
-    showFullDescription: false
-
-  footer:
-    since: 2024
-    customText: "拾遗记"
-
-menu:
-  main:
-    - identifier: home
-      name: "首页"
-      url: "/"
-      weight: 1
-      params:
-        icon: home
-    - identifier: archives
-      name: "归档"
-      url: "/archives/"
-      weight: 2
-      params:
-        icon: archive
-
-markup:
-  goldmark:
-    renderer:
-      unsafe: true # 允许 HTML 标签
-  highlight:
-    noClasses: false
-    codeFences: true
-    guessSyntax: true
-    lineNos: true
-    style: "github-dark"
-
-outputs:
-  home:
-    - HTML
-    - RSS
-    - JSON

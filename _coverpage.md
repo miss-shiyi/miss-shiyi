@@ -5,4 +5,8 @@
 [GitHub](https://github.com/miss-shiyi)
 [开始阅读](#README)
 
-![color](https://dispenser.edgetag.io/v1/background/gradient?colors=000000,434343)
+<style>
+  section.cover {
+    background: linear-gradient(to left bottom, #2c3e50, #000000) !important;
+  }
+</style>

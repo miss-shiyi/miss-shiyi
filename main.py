@@ -32,56 +32,46 @@ def add_issue_info(issue, md):
     md.write(f"- `[{time_str}]` &nbsp; **[{issue.title}]({issue.html_url})** \n")
 
 def add_md_label(repo, md_path, me):
-    # 1. 获取仓库所有标签
     labels = repo.get_labels()
-    sidebar_content = ["* [🏠 Home](README.md)\n"]
+    # 侧边栏初始化：首页必须放在最上面
+    sidebar_content = ["* [🏠 首页](README.md)\n\n"]
     
-    # 获取所有开放的 Issues 并缓存，减少 API 调用压力
     all_issues = list(repo.get_issues(state="open"))
-    print(f"Total open issues found: {len(all_issues)}")
 
     with open(md_path, "a+", encoding="utf-8") as md:
+        md.write("## 📂 文章分类 (Categories)\n\n") # 显式写入标题
+        
         for label in labels:
-            if label.name in IGNORE_LABELS:
-                continue
+            # 过滤掉 GitHub 默认的无关标签，但保留你的自定义分类
+            if label.name in ["bug", "help wanted", "invalid", "question"]: continue
+            if label.name in IGNORE_LABELS: continue
 
-            # 2. 筛选出属于当前 label 的 issue
-            issues_in_label = [
-                i for i in all_issues 
-                if label.name in [l.name for l in i.labels] and i.user.login == me and not i.pull_request
-            ]
+            # 匹配文章
+            issues_in_label = [i for i in all_issues if label.name in [l.name for l in i.labels]]
+            if not issues_in_label: continue
 
-            if not issues_in_label:
-                continue
-
-            print(f"Processing Label: {label.name} ({len(issues_in_label)} issues)")
-
-            # 3. 写入 README 分类
             icon = LABEL_ICONS.get(label.name, "🔖")
-            md.write(f"### {icon} {label.name}\n\n")
-            sidebar_content.append(f"* {icon} {label.name}\n")
+            # 写入 README
+            md.write(f"### {icon} {label.name}\n")
+            # 写入 侧边栏结构
+            sidebar_content.append(f"* **{icon} {label.name}**\n")
             
-            # 按时间倒序排序
             issues_in_label.sort(key=lambda x: x.created_at, reverse=True)
 
-            for i, issue in enumerate(issues_in_label):
-                if i == ANCHOR_NUMBER:
-                    md.write("<details><summary><i>✨ View More...</i></summary>\n\n")
+            for issue in issues_in_label:
+                # 写入 README 列表
+                time_str = issue.created_at.strftime("%Y-%m-%d")
+                md.write(f"- `[{time_str}]` [{issue.title}]({issue.html_url})\n")
                 
-                add_issue_info(issue, md)
-                
-                # 4. 写入侧边栏逻辑
+                # 写入 侧边栏子项 (关键：Docsify 识别的路径)
                 safe_title = re.sub(r'[\\/:*?"<>|]', '_', issue.title)
                 sidebar_content.append(f"  * [{issue.title}](BACKUP/{issue.number}_{safe_title}.md)\n")
-            
-            if len(issues_in_label) > ANCHOR_NUMBER:
-                md.write("\n</details>\n")
             md.write("\n")
-            
-    # 同时生成 Docsify 侧边栏
+
+    # 强制覆盖生成 _sidebar.md
     with open("_sidebar.md", "w", encoding="utf-8") as sb:
         sb.writelines(sidebar_content)
-
+        
 def generate_rss_feed(repo, filename, me):
     fg = FeedGenerator()
     fg.id(repo.html_url)

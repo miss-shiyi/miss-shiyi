@@ -3,30 +3,33 @@ import argparse, os, re, shutil
 from github import Github, Auth
 
 def setup_directories():
-    # 清理并重建 content 目录
-    if os.path.exists("content"):
-        shutil.rmtree("content")
+    # 彻底清理所有旧目录，防止旧缓存干扰
+    for d in ["content", "data", "public"]:
+        if os.path.exists(d):
+            shutil.rmtree(d)
     os.makedirs(os.path.join("content", "posts"))
-    # 创建归档页
     os.makedirs(os.path.join("content", "archives"))
-
-def clean_title(title):
-    return re.sub(r'[\\/:*?"<>|]', '', title).strip().replace(" ", "-")
+    os.makedirs("data")
 
 def main(token, repo_name):
     gh = Github(auth=Auth.Token(token))
     repo = gh.get_repo(repo_name)
     setup_directories()
     
-    # 1. 生成归档页面配置
-    with open(os.path.join("content", "archives", "index.md"), "w", encoding="utf-8") as f:
+    # --- 绝杀：直接在 data 目录生成侧边栏数据，绕过 hugo.yaml 的解析 Bug ---
+    # 这会强制定义 sidebar 及其内部的 enabled 字段
+    with open("data/sidebar.json", "w", encoding="utf-8") as f:
+        f.write('{"enabled": true}')
+
+    # 生成归档页
+    with open("content/archives/index.md", "w", encoding="utf-8") as f:
         f.write("---\ntitle: \"归档\"\nlayout: \"archives\"\n---\n")
 
-    # 2. 同步 Issues
+    # 同步 Issues
     issues = repo.get_issues(state="open")
     for issue in issues:
         if issue.pull_request: continue
-        safe_title = clean_title(issue.title)
+        safe_title = re.sub(r'[\\/:*?"<>|]', '', issue.title).strip().replace(" ", "-")
         post_dir = os.path.join("content", "posts", f"{issue.number}_{safe_title}")
         os.makedirs(post_dir, exist_ok=True)
         
@@ -34,14 +37,15 @@ def main(token, repo_name):
             f.write("---\n")
             f.write(f"title: \"{issue.title}\"\n")
             f.write(f"date: {issue.created_at.strftime('%Y-%m-%dT%H:%M:%S+08:00')}\n")
-            # 随机封面图兜底
             f.write(f"image: \"https://picsum.photos/seed/{issue.number}/800/400\"\n")
+            # 强制在每篇文章的元数据里也注入 sidebar 状态（三重保险）
+            f.write("sidebar: \n  enabled: true\n")
             labels = [l.name for l in issue.labels]
             if labels: f.write(f"categories: {labels}\n")
             f.write("---\n\n")
             f.write(issue.body if issue.body else "")
 
-    print("✅ Stack 内容同步完成")
+    print("✅ 数据注入完成，准备构建")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

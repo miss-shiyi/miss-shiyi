@@ -3,14 +3,26 @@ languageCode = 'zh-cn'
 title = '拾遗集'
 theme = 'hugo-theme-stack'
 
+# 核心：Stack 主题的参数必须严格分层
 [params]
     mainSections = ["posts"]
     featuredImageField = "image"
-    # 侧边栏配置
-    sidebar = { avatar = "https://github.com/miss-shiyi.png", title = "漼时宜", subtitle = "不属于任何人，也不拥有任何人。" }
+
+    # 修复你报错的关键点：sidebar 必须是一个对象
+    [params.sidebar]
+        avatar = "https://github.com/miss-shiyi.png"
+        title = "漼时宜"
+        subtitle = "不属于任何人，也不拥有任何人。"
+        # 显式告诉主题开启侧边栏
+        enabled = true 
+
+    # 底部版权
+    [params.footer]
+        since = 2024
+        customText = "拾遗记 - Digital Garden"
 
 [markup.goldmark.renderer]
-    unsafe = true # 必须开启，否则无法解析某些 Issue 里的 HTML
+    unsafe = true # 允许 Issue 里的 HTML 标签渲染
 
 [markup.highlight]
     noClasses = false
@@ -18,3 +30,7 @@ theme = 'hugo-theme-stack'
     guessSyntax = true
     lineNos = true
     style = "github-dark"
+
+# 推荐添加：允许主题处理中文搜索
+[outputs]
+    home = ["HTML", "RSS", "JSON"]

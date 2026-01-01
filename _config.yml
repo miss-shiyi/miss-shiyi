@@ -1,18 +1,15 @@
 title: "拾遗集"
 author: "漼时宜"
 description: "不属于任何人，也不拥有任何人。"
-remote_theme: jekyll/minima@v2.5.1
 
-# 插件声明
+# 核心：必须指定这个，样式才能在 GitHub Pages 路径下生效
+baseurl: "/miss-shiyi" 
+url: "https://miss-shiyi.github.io"
+
+remote_theme: jekyll/minima@v2.5.1
 plugins:
   - jekyll-remote-theme
   - jekyll-seo-tag
-  - jekyll-feed
 
-# 核心样式：暗黑模式
 minima:
-  skin: dark
-
-# 语法高亮
-markdown: kramdown
-highlighter: rouge
+  skin: dark # 强制开启暗黑皮肤

@@ -1,58 +1,50 @@
 # -*- coding: utf-8 -*-
 import os, requests, re
+from collections import defaultdict
 
 TOKEN = os.environ.get('G_T')
 REPO = "miss-shiyi/miss-shiyi"
 
 def sync():
-    if not os.path.exists("_posts"):
-        os.makedirs("_posts")
-    
-    for file in os.listdir("_posts"):
-        os.remove(os.path.join("_posts", file))
-
     url = f"https://api.github.com/repos/{REPO}/issues?state=open"
     headers = {"Authorization": f"token {TOKEN}"}
     
     try:
         response = requests.get(url, headers=headers)
         issues = response.json()
-        readme_list = []
+        
+        # 按分类存储：{ "分类名": ["文章链接1", "文章链接2"] }
+        categories = defaultdict(list)
 
         for issue in issues:
             if "pull_request" in issue: continue
             
-            date = issue['created_at'].split('T')[0]
-            # 这里的标题清理是关键，防止 URL 乱码
-            clean_title = re.sub(r'[^\w\s-]', '', issue['title']).strip().replace(" ", "-")
-            filename = f"_posts/{date}-{issue['number']}-{clean_title}.md"
+            # 获取分类（Label），如果没有标签则归类为 "未分类"
+            labels = [l['name'] for l in issue['labels']]
+            category_name = labels[0] if labels else "未分类"
             
-            # 修正 README 链接：Jekyll 默认路径是 /年/月/日/标题.html
-            site_link = f"https://miss-shiyi.github.io/miss-shiyi/{date.replace('-','/')}/{clean_title}.html"
-            readme_list.append(f"- [{issue['title']}]({site_link}) — `{date}`")
+            date = issue['created_at'].split('T')[0]
+            # 链接直接指向 Issue 页面，点击即看，最稳定
+            link = f"- [{issue['title']}]({issue['html_url']}) — `{date}`"
+            categories[category_name].append(link)
 
-            with open(filename, "w", encoding="utf-8") as f:
-                f.write("---\n")
-                f.write("layout: post\n")
-                f.write(f"title: \"{issue['title']}\"\n")
-                f.write(f"date: {issue['created_at']}\n")
-                # 写入标签，Minima 会自动分类
-                labels = [l['name'] for l in issue['labels']]
-                if labels: f.write(f"tags: {labels}\n")
-                f.write("---\n\n")
-                f.write(issue['body'] if issue['body'] else "")
-
-        # 恢复被我弄丢的 README 列表
+        # 构建 README 内容
         with open("README.md", "w", encoding="utf-8") as f:
             f.write("# 拾遗集\n\n")
             f.write("> 不属于任何人，也不拥有任何人。\n\n")
-            f.write("### 📝 笔记存档\n\n")
-            f.write("\n".join(readme_list) if readme_list else "暂无文章")
-            f.write(f"\n\n---\n*Last sync: {issues[0]['updated_at'] if issues else 'N/A'}*")
+            
+            # 遍历分类写入
+            for cat, posts in categories.items():
+                f.write(f"### 📁 {cat}\n")
+                f.write("\n".join(posts))
+                f.write("\n\n")
+            
+            f.write("---\n")
+            f.write(f"*上次同步时间: {issues[0]['updated_at'] if issues else 'N/A'} (UTC)*")
 
-        print("✅ README 和文章已同步")
+        print("✅ README 列表已按分类同步完成")
     except Exception as e:
-        print(f"❌ 失败: {e}")
+        print(f"❌ 运行出错: {e}")
 
 if __name__ == "__main__":
     sync()

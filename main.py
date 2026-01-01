@@ -62,7 +62,13 @@ def main(token, repo_name):
         with open(filepath, "w", encoding="utf-8") as f:
             # 增加一些 Frontmatter 给 VitePress（可选，用于显示更新日期）
             f.write(f"---\neditLink: false\nlastUpdated: {format_time(issue.updated_at)}\n---\n\n")
-            f.write(f"# {issue.title}\n\n{issue.body if issue.body else ''}")
+            # 2. 写入标题
+            f.write(f"# {issue.title}\n\n")
+            
+            # 3. 关键修改：用 v-pre 容器包裹正文，防止 <T> 等泛型符号报错
+            f.write("::: v-pre\n") 
+            f.write(issue.body if issue.body else "")
+            f.write("\n:::\n")
 
         # 整理分类信息
         labels = [l.name for l in issue.labels if l.name not in IGNORE_LABELS]

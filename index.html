@@ -2,39 +2,23 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>拾遗 | Digital Garden</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/lib/themes/pure.css">
+  <title>拾遗集</title>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
 </head>
 <body>
-  <div id="app">✨ 正在整理花园...</div>
+  <div id="app">正在加载花园...</div>
   <script>
     window.$docsify = {
       name: 'miss-shiyi',
       repo: 'miss-shiyi/miss-shiyi',
-      loadSidebar: true, // 必须开启！
-      alias: { '/.*/_sidebar.md': '/_sidebar.md' }, // 解决子目录找不到侧边栏的问题
-      subMaxLevel: 3,
-      coverpage: true,
+      loadSidebar: true, // 开启侧边栏
+      coverpage: true,   // 开启封面
+      subMaxLevel: 2,    // 侧边栏显示层级
       auto2top: true,
-      // 搜索配置
-      search: {
-        placeholder: '搜索文章...',
-        noData: '找不到结果',
-        depth: 6
-      },
-      // 底部版权
-      plugins: [
-        function(hook) {
-          hook.afterEach(function(html) {
-            return html + '<hr/><footer style="text-align:center;">© 2024-2026 miss-shiyi. Powered by Docsify.</footer>'
-          })
-        }
-      ]
+      search: 'auto'
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
 </body>
 </html>

@@ -93,7 +93,13 @@ def generate_rss_feed(repo, filename, me):
         fe.id(issue.html_url)
         fe.title(issue.title)
         fe.link(href=issue.html_url)
-        fe.published(issue.created_at.replace(tzinfo=None))
+        
+        if issue.created_at.tzinfo is None:
+            published_time = issue.created_at.replace(tzinfo=timezone.utc)
+        else:
+            published_time = issue.created_at
+        fe.published(published_time)
+    
         content = "".join(c for c in issue.body if _valid_xml_char_ordinal(c))
         fe.content(CDATA(marko.convert(content)), type="html")
     fg.atom_file(filename)

@@ -1,0 +1,19 @@
+baseURL = 'https://miss-shiyi.github.io/miss-shiyi/'
+languageCode = 'zh-cn'
+title = '拾遗集'
+theme = 'PaperMod'
+
+[params]
+    defaultTheme = "auto" # 自动跟随系统深色模式
+    ShowReadingTime = true
+    ShowShareButtons = false
+    ShowCodeCopyButtons = true # 允许用户一键复制你的代码
+
+[markup.goldmark.renderer]
+    unsafe = true # 允许 Markdown 中使用 HTML，极其重要，增加兼容性
+
+[markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    lineNos = true
+    style = "dracula" # 一个非常经典的深色代码高亮风格

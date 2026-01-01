@@ -1,21 +1,31 @@
 name: Generate GitBlog README
 
 on:
-  workflow_dispatch:
+  # 1. 监听 Issue 的动作
   issues:
-    types: [opened, edited]
+    types: [opened, edited, labeled, unlabeled, deleted, closed, reopened]
+  
+  # 2. 监听 Issue 评论（如果你在 main.py 里有处理评论的逻辑，比如友情链接）
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
+
+  # 3. 监听代码推送（当你手动修改 main.py 或 index.html 时触发）
   push:
     branches:
       - master
+      - main
     paths:
-      - main.py
+      - 'main.py'
+      - '.github/workflows/*.yml'
+
+  # 4. 支持手动触发（在 Actions 页面点击按钮运行）
+  workflow_dispatch:
 
 jobs:
   sync:
     name: Generate README
     runs-on: ubuntu-latest
+    # 仅当仓库所有者操作时才运行，防止别人乱开 Issue 消耗你的 Action 额度
     if: github.event.issue.user.login == github.repository_owner || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     
     permissions:
@@ -36,17 +46,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install PyGithub feedgen marko lxml
 
-      - name: Generate new md
+      - name: Generate Content
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.G_T }}
           GITHUB_NAME: ${{ github.repository_owner }}
         run: |
+          # 运行你的脚本
           python main.py "$GH_TOKEN" "${{ github.repository }}"
           
       - name: Push updates
         run: |
-          git config --local user.email "miss-shiyi@outlook.com"
-          git config --local user.name "miss-shiyi"
-          git add README.md BACKUP/*.md feed.xml _sidebar.md
-          git commit -m 'chore: 🤖 update blog and assets' || echo "nothing to commit"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          # 强制添加所有可能变更的文件
+          git add README.md BACKUP/*.md _sidebar.md feed.xml
+          # 只有在有变化时才提交，防止报错
+          git commit -m "chore: 🤖 自动更新博文 [skip ci]" || echo "nothing to commit"
           git push || echo "nothing to push"

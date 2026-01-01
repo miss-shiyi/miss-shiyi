@@ -1,19 +1,20 @@
 baseURL = 'https://miss-shiyi.github.io/miss-shiyi/'
 languageCode = 'zh-cn'
 title = '拾遗集'
-theme = 'PaperMod'
+theme = 'hugo-theme-stack'
 
 [params]
-    defaultTheme = "auto" # 自动跟随系统深色模式
-    ShowReadingTime = true
-    ShowShareButtons = false
-    ShowCodeCopyButtons = true # 允许用户一键复制你的代码
+    mainSections = ["posts"]
+    featuredImageField = "image"
+    # 侧边栏配置
+    sidebar = { avatar = "https://github.com/miss-shiyi.png", title = "漼时宜", subtitle = "不属于任何人，也不拥有任何人。" }
 
 [markup.goldmark.renderer]
-    unsafe = true # 允许 Markdown 中使用 HTML，极其重要，增加兼容性
+    unsafe = true # 必须开启，否则无法解析某些 Issue 里的 HTML
 
 [markup.highlight]
+    noClasses = false
     codeFences = true
     guessSyntax = true
     lineNos = true
-    style = "dracula" # 一个非常经典的深色代码高亮风格
+    style = "github-dark"

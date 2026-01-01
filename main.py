@@ -3,10 +3,12 @@ import argparse, os, re, shutil
 from github import Github, Auth
 
 def setup_directories():
-    path = os.path.join("content", "posts")
-    if os.path.exists(path):
-        shutil.rmtree(path)
-    os.makedirs(path)
+    # 清理并重建 content 目录
+    if os.path.exists("content"):
+        shutil.rmtree("content")
+    os.makedirs(os.path.join("content", "posts"))
+    # 创建归档页
+    os.makedirs(os.path.join("content", "archives"))
 
 def clean_title(title):
     return re.sub(r'[\\/:*?"<>|]', '', title).strip().replace(" ", "-")
@@ -16,30 +18,30 @@ def main(token, repo_name):
     repo = gh.get_repo(repo_name)
     setup_directories()
     
+    # 1. 生成归档页面配置
+    with open(os.path.join("content", "archives", "index.md"), "w", encoding="utf-8") as f:
+        f.write("---\ntitle: \"归档\"\nlayout: \"archives\"\n---\n")
+
+    # 2. 同步 Issues
     issues = repo.get_issues(state="open")
-    
     for issue in issues:
         if issue.pull_request: continue
-            
         safe_title = clean_title(issue.title)
-        # Stack 推荐使用 Page Bundles 结构：posts/标题/index.md
         post_dir = os.path.join("content", "posts", f"{issue.number}_{safe_title}")
         os.makedirs(post_dir, exist_ok=True)
-        filepath = os.path.join(post_dir, "index.md")
-
-        with open(filepath, "w", encoding="utf-8") as f:
+        
+        with open(os.path.join(post_dir, "index.md"), "w", encoding="utf-8") as f:
             f.write("---\n")
             f.write(f"title: \"{issue.title}\"\n")
             f.write(f"date: {issue.created_at.strftime('%Y-%m-%dT%H:%M:%S+08:00')}\n")
-            # 随机给一张封面图（可选，Stack 首页有图才好看）
+            # 随机封面图兜底
             f.write(f"image: \"https://picsum.photos/seed/{issue.number}/800/400\"\n")
             labels = [l.name for l in issue.labels]
-            if labels:
-                f.write(f"categories: {labels}\n")
+            if labels: f.write(f"categories: {labels}\n")
             f.write("---\n\n")
             f.write(issue.body if issue.body else "")
 
-    print("✅ Stack 文章同步完成")
+    print("✅ Stack 内容同步完成")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

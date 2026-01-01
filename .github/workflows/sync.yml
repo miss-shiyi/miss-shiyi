@@ -1,0 +1,35 @@
+name: Sync Issues to Jekyll Posts
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Sync Script
+        env:
+          # 这一步最关键：把 GitHub 的 Secret 映射到 Python 能读到的环境变量
+          G_T: ${{ secrets.G_T }}
+        run: python sync.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add _posts/
+          git commit -m "chore: sync issues to posts" || exit 0
+          git push

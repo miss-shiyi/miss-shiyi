@@ -1,6 +1,6 @@
 # 拾遗集 <small style="color: #00e676; font-weight: normal;">Digital Garden</small>
 
-> 不属于任何人，也不拥有任何人，减少期待，好好生活。
+> "Neither possessed nor possessing. Less expectation, better life."
 
 [开始阅读](README.md)
 [GitHub](https://github.com/miss-shiyi)

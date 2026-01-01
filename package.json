@@ -1,12 +1,18 @@
 {
-  "name": "miss-shiyi-blog",
-  "version": "1.0.0",
+  "name": "miss-shiyi-garden",
+  "version": "1.1.0",
+  "description": "Digital Garden of miss-shiyi",
+  "type": "module",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
     "preview": "vitepress preview"
   },
   "devDependencies": {
-    "vitepress": "^1.0.0"
+    "vitepress": "^1.0.0",
+    "vue": "^3.4.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

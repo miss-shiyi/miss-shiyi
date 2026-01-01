@@ -3,7 +3,8 @@ from datetime import timezone
 import argparse
 import os
 import re
-from github import Github, GithubException
+from github import Github, Auth, GithubException
+from datetime import timezone
 from marko.ext.gfm import gfm as marko
 from feedgen.feed import FeedGenerator
 from lxml.etree import CDATA
@@ -112,8 +113,17 @@ def save_issue(issue, me, dir_name):
         f.write(f"# [{issue.title}]({issue.html_url})\n\n{issue.body}")
 
 def main(token, repo_name, issue_number=None):
-    gh = Github(token)
-    me = get_me(gh)
+   
+    auth = Auth.Token(token)
+    gh = Github(auth=auth)
+    me = os.getenv("GITHUB_NAME")
+    if not me:
+        try:
+            me = gh.get_user().login
+        except Exception:
+            # 如果是 GITHUB_TOKEN 可能无法获取 get_user，直接通过 repo 路径解析
+            me = repo_name.split('/')[0]
+    
     repo = gh.get_repo(repo_name)
     
     add_md_header("README.md", repo_name)

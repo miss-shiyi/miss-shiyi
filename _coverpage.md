@@ -1,12 +1,6 @@
 # 拾遗集 <small>Digital Garden</small>
 
-> 这里的每一篇文章，都是一段被拾起的时光。
+> 不属于任何人，也不拥有任何人，减少期待，好好生活。
 
-[GitHub](https://github.com/miss-shiyi)
 [开始阅读](#README)
-
-<style>
-  section.cover {
-    background: linear-gradient(to left bottom, #2c3e50, #000000) !important;
-  }
-</style>
+[GitHub](https://github.com/miss-shiyi)

@@ -6,10 +6,12 @@ TOKEN = os.environ.get('G_T')
 REPO = "miss-shiyi/miss-shiyi"
 
 def sync():
+    # 准备目录
     backup_dir = "BACKUP"
-    if os.path.exists(backup_dir):
-        shutil.rmtree(backup_dir)
-    os.makedirs(backup_dir)
+    wiki_temp = "wiki_temp"
+    for d in [backup_dir, wiki_temp]:
+        if os.path.exists(d): shutil.rmtree(d)
+        os.makedirs(d)
 
     url = f"https://api.github.com/repos/{REPO}/issues?state=open"
     headers = {"Authorization": f"token {TOKEN}"}
@@ -17,52 +19,42 @@ def sync():
     try:
         response = requests.get(url, headers=headers)
         issues = response.json()
-        categories = defaultdict(list)
+        if not isinstance(issues, list): return
+        
+        readme_list = []
 
         for issue in issues:
             if "pull_request" in issue: continue
             
+            # 基础信息
             labels = [l['name'] for l in issue['labels']]
             cat = labels[0] if labels else "未分类"
-            
             date = issue['created_at'].split('T')[0]
             clean_title = re.sub(r'[^\w\s-]', '', issue['title']).strip().replace(" ", "-")
             
-            # --- 1. 生成物理文件 ---
+            # --- 1. 写入主仓库 BACKUP (带分类文件夹) ---
             cat_dir = os.path.join(backup_dir, cat)
-            if not os.path.exists(cat_dir):
-                os.makedirs(cat_dir)
-            
-            file_name = f"{date}-{clean_title}.md"
-            file_path = os.path.join(cat_dir, file_name)
-            
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(f"# {issue['title']}\n\n") # 在文件开头加个大标题
-                f.write(issue['body'] if issue['body'] else "")
+            if not os.path.exists(cat_dir): os.makedirs(cat_dir)
+            main_file_name = f"{date}-{clean_title}.md"
+            with open(os.path.join(cat_dir, main_file_name), "w", encoding="utf-8") as f:
+                f.write(f"# {issue['title']}\n\n{issue['body'] or ''}")
 
-            # --- 2. 关键修改：指向仓库内的 MD 文件 ---
-            # 使用相对路径，GitHub README 会自动将其解析为仓库文件链接
-            # 空格需要转换为 %20 确保链接有效
-            relative_path = f"BACKUP/{cat}/{file_name}".replace(" ", "%20")
-            
-            # 这样点击后会进入：github.com/用户名/仓库名/blob/main/BACKUP/分类/文件名.md
-            item = f"- [{issue['title']}]({relative_path}) — `{date}`"
-            categories[cat].append(item)
+            # --- 2. 写入 Wiki 临时目录 (扁平化命名) ---
+            wiki_file_name = f"[{cat}] {date}-{clean_title}.md"
+            with open(os.path.join(wiki_temp, wiki_file_name), "w", encoding="utf-8") as f:
+                f.write(f"# {issue['title']}\n\n> **分类**: {cat} | **日期**: {date}\n\n---\n\n{issue['body'] or ''}")
 
-        # 写入 README.md
+            # --- 3. 准备 README 列表 ---
+            rel_path = f"BACKUP/{cat}/{main_file_name}".replace(" ", "%20")
+            readme_list.append(f"- [{issue['title']}]({rel_path}) — `{date}` ({cat})")
+
+        # 更新 README
         with open("README.md", "w", encoding="utf-8") as f:
-            f.write("# 拾遗集\n\n")
-            f.write("> 不属于任何人，也不拥有任何人。\n\n")
-            for cat in sorted(categories.keys()):
-                f.write(f"### 📁 {cat}\n")
-                f.write("\n".join(categories[cat]))
-                f.write("\n\n")
-            f.write("---\n")
-            f.write(f"*上次同步: {issues[0]['updated_at'] if issues else 'N/A'}*")
+            f.write(f"# 拾遗集\n\n> [📖 点击进入 Wiki 沉浸阅读](https://github.com/{REPO}/wiki)\n\n### 📝 最近备份\n\n" + "\n".join(readme_list))
 
-        print("✅ 已更新 README 链接至本地备份文件")
+        print("✅ 脚本执行完成")
     except Exception as e:
-        print(f"❌ 运行失败: {e}")
+        print(f"❌ 错误: {e}")
 
 if __name__ == "__main__":
     sync()

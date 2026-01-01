@@ -1,9 +1,18 @@
-title: 拾遗集
-description: Belong to no one, possess no one. Expect less, live more.
-remote_theme: pages-themes/midnight@v0.2.0 # 使用 GitHub 官方维护的主题，绝不报错
+title: "拾遗集"
+author: "漼时宜"
+description: "不属于任何人，也不拥有任何人。"
+remote_theme: jekyll/minima@v2.5.1
+
+# 插件声明
 plugins:
   - jekyll-remote-theme
+  - jekyll-seo-tag
+  - jekyll-feed
 
-# 分类配置（Jekyll 自动根据标签生成）
-show_downloads: false
-google_analytics:
+# 核心样式：暗黑模式
+minima:
+  skin: dark
+
+# 语法高亮
+markdown: kramdown
+highlighter: rouge

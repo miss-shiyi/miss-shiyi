@@ -2,7 +2,7 @@
 > **"不属于任何人，也不拥有任何人，减少期待，好好生活。"**
 ---
 ## 🕒 最近更新
-- `[2026-01-01]` [新的一年到了202601011407](https://github.com/miss-shiyi/miss-shiyi/issues/218)
+- `[2026-01-01]` [新的一年到了，元旦了](https://github.com/miss-shiyi/miss-shiyi/issues/218)
 - `[2023-12-28]` [就是豆粉，就是豆粉，就是豆粉](https://github.com/miss-shiyi/miss-shiyi/issues/217)
 - `[2023-09-29]` [中秋快乐](https://github.com/miss-shiyi/miss-shiyi/issues/214)
 - `[2023-12-26]` [《在细雨中呼喊》](https://github.com/miss-shiyi/miss-shiyi/issues/216)

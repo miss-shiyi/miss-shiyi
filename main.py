@@ -111,6 +111,23 @@ def save_issue(issue, me, dir_name):
     md_name = os.path.join(dir_name, f"{issue.number}_{safe_title}.md")
     with open(md_name, "w", encoding="utf-8") as f:
         f.write(f"# [{issue.title}]({issue.html_url})\n\n{issue.body}")
+        
+def add_md_sidebar(repo, me):
+    sidebar_path = "_sidebar.md"
+    with open(sidebar_path, "w", encoding="utf-8") as sb:
+        sb.write("* [🏠 Home](README.md)\n")
+        labels = repo.get_labels()
+        for label in labels:
+            if label.name in IGNORE_LABELS: continue
+            issues = repo.get_issues(labels=[label], state="open")
+            if issues.totalCount == 0: continue
+            
+            sb.write(f"* {label.name}\n")
+            for issue in issues:
+                if issue.user.login == me:
+                    # 链接指向 BACKUP 文件夹下的 md
+                    safe_title = re.sub(r'[\\/:*?"<>|]', '_', issue.title)
+                    sb.write(f"  * [{issue.title}](BACKUP/{issue.number}_{safe_title}.md)\n")
 
 def main(token, repo_name, issue_number=None):
    
@@ -129,14 +146,13 @@ def main(token, repo_name, issue_number=None):
     add_md_header("README.md", repo_name)
     add_md_recent(repo, "README.md", me)
     generate_rss_feed(repo, "feed.xml", me)
-    
+    add_md_sidebar(repo, me)
     if not os.path.exists(BACKUP_DIR):
         os.mkdir(BACKUP_DIR)
         
     for issue in repo.get_issues(state="open"):
         if is_me(issue, me) and not issue.pull_request:
             save_issue(issue, me, BACKUP_DIR)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("github_token")

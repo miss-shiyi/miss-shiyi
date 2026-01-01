@@ -1,31 +1,58 @@
-name: Auto Update README
+name: Auto Sync Issues to Backup
 
 on:
+  # 监听 Issue 的所有关键变动
   issues:
-    types: [opened, edited, labeled, unlabeled, reopened, closed]
+    types: [opened, edited, labeled, unlabeled, reopened, closed, deleted]
+  
+  # 每天凌晨自动跑一次，确保万无一失（可选）
+  schedule:
+    - cron: '0 0 * * *'
+    
+  # 支持手动在 Actions 页面点按钮运行
   workflow_dispatch:
 
+# 必须声明权限，否则 Action 机器人无法提交代码
 permissions:
   contents: write
 
 jobs:
-  update-readme:
+  sync-job:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          # 确保拉取完整分支
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Sync
-        env:
-          G_T: ${{ secrets.G_T }}
+
+      - name: Install dependencies
         run: |
           pip install requests
-          python sync.py
-      - name: Commit
+
+      - name: Run Sync Script
+        env:
+          # 把你在 Settings 里的 Secret 映射进来
+          G_T: ${{ secrets.G_T }}
+        run: python sync.py
+
+      - name: Commit and Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "chore: update article list by categories" || exit 0
-          git push
+          
+          # 添加 README 和 BACKUP 目录的所有变动
+          git add README.md BACKUP/
+          
+          # 只有在有变化时才执行提交，防止 Action 报错
+          if git diff --staged --quiet; then
+            echo "No changes detected, skipping push."
+          else
+            git commit -m "chore: sync issues and update backup files"
+            git push
+          fi

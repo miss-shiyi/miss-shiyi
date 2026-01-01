@@ -3,14 +3,12 @@ import argparse, os, re, shutil
 from github import Github, Auth
 
 def setup_directories():
-    # 每次运行先清理旧文章，确保 Issue 删除后本地同步删除
     path = os.path.join("content", "posts")
     if os.path.exists(path):
         shutil.rmtree(path)
     os.makedirs(path)
 
 def clean_title(title):
-    # 彻底移除可能导致构建问题的特殊字符
     return re.sub(r'[\\/:*?"<>|]', '', title).strip().replace(" ", "-")
 
 def main(token, repo_name):
@@ -24,27 +22,24 @@ def main(token, repo_name):
         if issue.pull_request: continue
             
         safe_title = clean_title(issue.title)
-        filepath = os.path.join("content", "posts", f"{issue.number}_{safe_title}.md")
+        # Stack 推荐使用 Page Bundles 结构：posts/标题/index.md
+        post_dir = os.path.join("content", "posts", f"{issue.number}_{safe_title}")
+        os.makedirs(post_dir, exist_ok=True)
+        filepath = os.path.join(post_dir, "index.md")
 
         with open(filepath, "w", encoding="utf-8") as f:
-            # Hugo 必须的元数据：YAML 格式
             f.write("---\n")
             f.write(f"title: \"{issue.title}\"\n")
-            # 格式必须符合 ISO 8601，否则 Hugo 报错
             f.write(f"date: {issue.created_at.strftime('%Y-%m-%dT%H:%M:%S+08:00')}\n")
-            f.write(f"lastmod: {issue.updated_at.strftime('%Y-%m-%dT%H:%M:%S+08:00')}\n")
-            
+            # 随机给一张封面图（可选，Stack 首页有图才好看）
+            f.write(f"image: \"https://picsum.photos/seed/{issue.number}/800/400\"\n")
             labels = [l.name for l in issue.labels]
             if labels:
                 f.write(f"categories: {labels}\n")
-                f.write(f"tags: {labels}\n")
-            
             f.write("---\n\n")
-            
-            # Hugo 直接渲染原始文本，Swift 的 <T> 会被正确处理，不丢高亮
             f.write(issue.body if issue.body else "")
 
-    print("✅ Hugo 文章同步完成")
+    print("✅ Stack 文章同步完成")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

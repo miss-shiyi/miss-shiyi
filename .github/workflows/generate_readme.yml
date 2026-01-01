@@ -1,4 +1,4 @@
-name: Deploy Hugo Site
+name: Deploy Hugo Stack Site
 
 on:
   issues:
@@ -16,9 +16,11 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # 解决你之前遇到的 Environment 报错
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,10 +30,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install PyGithub
         run: pip install PyGithub
 
-      - name: Run Sync Script
+      - name: Sync Issues
         run: python main.py ${{ secrets.G_T }} ${{ github.repository }}
 
       - name: Setup Hugo
@@ -40,11 +42,11 @@ jobs:
           hugo-version: 'latest'
           extended: true
 
-      - name: Build Site
+      - name: Fetch Latest Theme and Build
         run: |
-          # 动态拉取主题，防止子模块报错
           mkdir -p themes
-          git clone --depth=1 https://github.com/adityatelange/hugo-PaperMod themes/PaperMod
+          # 实时克隆主题仓库的 main 分支，确保每次构建都是最新版
+          git clone --depth=1 https://github.com/CaiJimmy/hugo-theme-stack themes/hugo-theme-stack
           hugo --minify
 
       - name: Upload artifact

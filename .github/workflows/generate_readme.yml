@@ -1,15 +1,10 @@
-name: Generate GitBlog README
+name: Generate GitBlog & Deploy VitePress
 
 on:
-  # 1. 监听 Issue 的动作
   issues:
     types: [opened, edited, labeled, unlabeled, deleted, closed, reopened]
-  
-  # 2. 监听 Issue 评论（如果你在 main.py 里有处理评论的逻辑，比如友情链接）
   issue_comment:
     types: [created, edited, deleted]
-
-  # 3. 监听代码推送（当你手动修改 main.py 或 index.html 时触发）
   push:
     branches:
       - master
@@ -17,31 +12,32 @@ on:
     paths:
       - 'main.py'
       - '.github/workflows/*.yml'
-
-  # 4. 支持手动触发（在 Actions 页面点击按钮运行）
   workflow_dispatch:
 
-jobs:
-  sync:
-    name: Generate README
-    runs-on: ubuntu-latest
-    # 仅当仓库所有者操作时才运行，防止别人乱开 Issue 消耗你的 Action 额度
-    if: github.event.issue.user.login == github.repository_owner || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    
-    permissions:
-      contents: write
+# 核心权限设置：允许修改仓库内容并部署 Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
+jobs:
+  sync-and-build:
+    name: Sync Issues and Build Site
+    runs-on: ubuntu-latest
+    if: github.event.issue.user.login == github.repository_owner || github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'issue_comment'
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # --- 1. Python 环境：同步 Issue 生成 Markdown ---
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
           cache: 'pip'
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install PyGithub feedgen marko lxml
@@ -51,15 +47,49 @@ jobs:
           GH_TOKEN: ${{ secrets.G_T }}
           GITHUB_NAME: ${{ github.repository_owner }}
         run: |
-          # 运行你的脚本
           python main.py "$GH_TOKEN" "${{ github.repository }}"
-          
+
+      # --- 2. 备份：将生成的 MD 文件推回仓库（保持 BACKUP 同步） ---
       - name: Push updates
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          # 强制添加所有可能变更的文件
-          git add README.md BACKUP/*.md _sidebar.md feed.xml
-          # 只有在有变化时才提交，防止报错
+          # 注意：VitePress 还需要 sidebar.json 等文件，确保脚本生成了它们
+          git add README.md BACKUP/*.md _sidebar.md feed.xml .vitepress/sidebar.json || echo "no sidebar.json"
           git commit -m "chore: 🤖 自动更新博文 [skip ci]" || echo "nothing to commit"
           git push || echo "nothing to push"
+
+      # --- 3. Node 环境：安装 VitePress 并构建静态网页 ---
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Build Site
+        run: |
+          if [ ! -f package.json ]; then
+            npm init -y
+            npm install vitepress vue
+          else
+            npm install
+          fi
+          npx vitepress build
+
+      # --- 4. 上传构建产物 ---
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .vitepress/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: sync-and-build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

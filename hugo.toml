@@ -3,26 +3,50 @@ languageCode = 'zh-cn'
 title = '拾遗集'
 theme = 'hugo-theme-stack'
 
-# 核心：Stack 主题的参数必须严格分层
+# -------------------------------------------------------------------
+# 核心参数配置
+# -------------------------------------------------------------------
 [params]
     mainSections = ["posts"]
     featuredImageField = "image"
 
-    # 修复你报错的关键点：sidebar 必须是一个对象
+    # 必须单独开辟 [params.sidebar] 层级，严禁写在 params 后面作为一个 KV 对
     [params.sidebar]
+        enabled = true
+        showArchive = true
+        showFullDescription = false
         avatar = "https://github.com/miss-shiyi.png"
         title = "漼时宜"
         subtitle = "不属于任何人，也不拥有任何人。"
-        # 显式告诉主题开启侧边栏
-        enabled = true 
 
-    # 底部版权
     [params.footer]
         since = 2024
-        customText = "拾遗记 - Digital Garden"
+        customText = "拾遗记"
 
+# -------------------------------------------------------------------
+# 菜单配置 (Stack 侧边栏必须要菜单，否则左侧是空的)
+# -------------------------------------------------------------------
+[[menu.main]]
+    identifier = "home"
+    name = "首页"
+    url = "/"
+    weight = 1
+    [menu.main.params]
+        icon = "home"
+
+[[menu.main]]
+    identifier = "archives"
+    name = "归档"
+    url = "/archives/"
+    weight = 2
+    [menu.main.params]
+        icon = "archive"
+
+# -------------------------------------------------------------------
+# 渲染与解析配置
+# -------------------------------------------------------------------
 [markup.goldmark.renderer]
-    unsafe = true # 允许 Issue 里的 HTML 标签渲染
+    unsafe = true  # 必须开启，否则 Issue 里的 HTML 标签会失效
 
 [markup.highlight]
     noClasses = false
@@ -31,6 +55,5 @@ theme = 'hugo-theme-stack'
     lineNos = true
     style = "github-dark"
 
-# 推荐添加：允许主题处理中文搜索
 [outputs]
     home = ["HTML", "RSS", "JSON"]

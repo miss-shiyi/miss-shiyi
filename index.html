@@ -1,37 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
   <meta charset="UTF-8">
-  <title>拾遗集 | miss-shiyi</title>
+  <title>拾遗集 | Digital Garden</title>
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
   <style>
-    /* 强行注入酷炫背景，不再依赖不稳定的外部 API */
+    /* 强行注入酷炫封面背景 */
     section.cover {
       background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%) !important;
     }
-    /* 侧边栏标题美化 */
-    .sidebar-nav strong { 
-      color: #00e676; 
-      font-size: 1.1em;
-      margin-top: 20px;
-      display: block;
-    }
+    /* 侧边栏美化 */
+    .sidebar-nav strong { color: #42b983; font-size: 1em; margin-top: 15px; display: block; }
+    .sidebar-nav ul li a { font-size: 14px; opacity: 0.8; }
   </style>
 </head>
 <body>
-  <div id="app">🌙 正在加载数字花园...</div>
+  <div id="app">🌙 正在唤醒数字花园...</div>
   <script>
     window.$docsify = {
       name: 'miss-shiyi',
-      repo: 'miss-shiyi/miss-shiyi',
-      loadSidebar: true, // 开启分类侧边栏
-      coverpage: true,   // 开启封面
-      onlyCover: true,   // 必须开启：首页仅显示封面，高级感来源
-      auto2top: true,
-      subMaxLevel: 2,
+      // 1. 开启侧边栏
+      loadSidebar: true, 
+      // 2. 开启封面
+      coverpage: true,
+      // 3. 首页只看封面（点击“开始阅读”后才看正文，非常高级）
+      onlyCover: true,
+      // 4. 路径兼容性修复
       alias: {
-        '/.*/_sidebar.md': '/_sidebar.md' // 修复子路径分类丢失
-      }
+        '/.*/_sidebar.md': '/_sidebar.md'
+      },
+      subMaxLevel: 2,
+      auto2top: true
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>

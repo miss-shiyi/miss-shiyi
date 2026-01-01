@@ -1,25 +1,17 @@
-name: Sync Issues to Jekyll Posts
-
+name: Sync Blog
 on:
-  # 1. 核心自动化：监听 Issue 的各种变动
   issues:
     types: [opened, edited, labeled, unlabeled, reopened]
-  
-  # 2. 定时备份：每 24 小时强制同步一次（可选，防止遗漏）
-  schedule:
-    - cron: '0 0 * * *'
-    
-  # 3. 手动触发：在 Actions 页面点按钮运行
   workflow_dispatch:
 
 permissions:
-  contents: write  # 必须开启写入权限，否则脚本无法把生成的 md 文件 push 到仓库
+  contents: write
 
 jobs:
-  sync:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -27,25 +19,21 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
-        run: pip install requests
-
-      - name: Run Sync Script
+      - name: Sync
         env:
-          # 映射你仓库里设置的 Secret 变量
           G_T: ${{ secrets.G_T }}
-        run: python sync.py
+        run: |
+          pip install requests
+          python sync.py
 
-      - name: Commit and Push changes
+      - name: Push Changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 确保只有在 _posts 文件夹有变动时才提交，防止空提交报错
           git add _posts/
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "No changes"
           else
-            git commit -m "chore: auto-sync issues to posts [skip ci]"
+            git commit -m "chore: sync blog content"
             git push
           fi

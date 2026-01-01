@@ -2,18 +2,26 @@ baseURL: "https://miss-shiyi.github.io/miss-shiyi/"
 languageCode: "zh-cn"
 title: "拾遗集"
 theme: "hugo-theme-stack"
-defaultContentLanguage: "zh-cn"
 
-# 基础标记配置
-markup:
-  goldmark:
-    renderer:
-      unsafe: true
-  highlight:
-    style: "github-dark"
-
-# 这里的 params 只留最简单的，不写嵌套的对象
 params:
   mainSections:
     - posts
   featuredImageField: "image"
+  sidebar:
+    enabled: true
+    avatar: "https://github.com/miss-shiyi.png"
+    title: "漼时宜"
+    subtitle: "不属于任何人，也不拥有任何人。"
+
+# 显式定义分类系统
+taxonomies:
+  category: categories
+  tag: tags
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true # 确保语法高亮和 HTML 渲染正常
+  highlight:
+    noClasses: false
+    style: "github-dark" # 这里保持 GitHub 风格高亮

@@ -2,11 +2,11 @@
 import argparse
 import os
 import json
+import re
 from github import Github, Auth
 from datetime import timezone
 
 # --- 配置 ---
-# 首页 README 内容（对应归档页）
 MD_HEAD = """# 📚 全部分类与存档
 > **"不属于任何人，也不拥有任何人，减少期待，好好生活。"**
 ---
@@ -14,7 +14,7 @@ MD_HEAD = """# 📚 全部分类与存档
 
 BACKUP_DIR = "BACKUP"
 IGNORE_LABELS = ["Friends", "Top", "TODO", "bug", "help wanted", "invalid", "question"]
-LABEL_ICONS = {"Python": "🐍", "Life": "🌱", "Automation": "🤖", "Code": "💻"}
+LABEL_ICONS = {"Python": "🐍", "Life": "🌱", "Automation": "🤖", "Code": "💻", "Swift": "🍎"}
 
 def format_time(time):
     return time.strftime("%Y-%m-%d")
@@ -26,12 +26,10 @@ def setup_directories():
             os.makedirs(path)
 
 def clean_title(title):
-    """安全标题转换，VitePress 建议 URL 中不使用特殊字符"""
-    # 移除或替换 Windows/Linux 文件系统敏感字符
+    """安全标题转换：移除特殊字符并处理空格"""
+    # 移除 VitePress 路由中可能引起问题的特殊字符
     s = re.sub(r'[\\/:*?"<>|]', '', title)
     return s.replace(" ", "-")
-
-import re
 
 def main(token, repo_name):
     # --- 1. 初始化 Auth 与 Repo ---
@@ -41,7 +39,6 @@ def main(token, repo_name):
     
     setup_directories()
     
-    # 存储所有分类数据
     dict_by_labels = {}
     all_posts = []
 
@@ -53,31 +50,38 @@ def main(token, repo_name):
         if issue.pull_request:
             continue
             
-        # 安全的文件名逻辑 (issue_number + title)
         safe_title = clean_title(issue.title)
         filename = f"{issue.number}_{safe_title}.md"
         filepath = os.path.join(BACKUP_DIR, filename)
 
         # 备份 Issue 内容到本地 Markdown
         with open(filepath, "w", encoding="utf-8") as f:
-            # 增加一些 Frontmatter 给 VitePress（可选，用于显示更新日期）
-            f.write(f"---\neditLink: false\nlastUpdated: {format_time(issue.updated_at)}\n---\n\n")
-            # 2. 写入标题
+            # --- 关键修复：Frontmatter ---
+            # 1. editLink: false 移除编辑链接
+            # 2. lastUpdated 显示更新时间
+            # 3. template: doc 确保作为文档渲染
+            f.write(f"---\n")
+            f.write(f"editLink: false\n")
+            f.write(f"lastUpdated: {format_time(issue.updated_at)}\n")
+            # 绝杀招式：禁用该页面的 Vue 功能，彻底解决 <T> 报错
+            f.write(f"features: []\n")
+            f.write(f"---\n\n")
+            
             f.write(f"# {issue.title}\n\n")
             
-            # 3. 关键修改：用 v-pre 容器包裹正文，防止 <T> 等泛型符号报错
-            f.write("::: v-pre\n") 
+            # 使用 v-pre 指令包裹正文，防止 Vue 解析正文中的特殊符号
+            f.write('<div v-pre>\n\n')
             f.write(issue.body if issue.body else "")
-            f.write("\n:::\n")
+            f.write('\n\n</div>\n')
 
         # 整理分类信息
         labels = [l.name for l in issue.labels if l.name not in IGNORE_LABELS]
         if not labels:
             labels = ["未分类"]
 
+        # VitePress 链接不包含 .md，且开头必须带 / 适配 base 路径
         post_info = {
             "title": issue.title,
-            # VitePress 链接不写 .md，且必须以 / 开头（相对于根目录）
             "link": f"/{BACKUP_DIR}/{issue.number}_{safe_title}",
             "created_at": format_time(issue.created_at)
         }
@@ -92,11 +96,8 @@ def main(token, repo_name):
     # --- 3. 生成 VitePress 侧边栏 (sidebar.json) ---
     print("生成 VitePress 侧边栏...")
     vite_sidebar = []
-    
-    # 按标签排序
     for label_name in sorted(dict_by_labels.keys()):
         posts = dict_by_labels[label_name]
-        # 文章按创建时间倒序
         posts.sort(key=lambda x: x['created_at'], reverse=True)
         
         icon = LABEL_ICONS.get(label_name, "🔖")
@@ -109,13 +110,13 @@ def main(token, repo_name):
     with open(".vitepress/sidebar.json", "w", encoding="utf-8") as f:
         json.dump(vite_sidebar, f, ensure_ascii=False, indent=2)
 
-    # --- 4. 更新主页/归档页 README.md ---
+    # --- 4. 更新归档页 README.md ---
     print("生成 README.md 归档页...")
     all_posts.sort(key=lambda x: x['created_at'], reverse=True)
     with open("README.md", "w", encoding="utf-8") as md:
         md.write(MD_HEAD)
         md.write("\n## 🕒 最近更新\n\n")
-        for p in all_posts[:10]: # 最近更新展示前10条
+        for p in all_posts[:10]:
             md.write(f"- `[{p['created_at']}]` [{p['title']}]({p['link']})\n")
         md.write("\n---\n\n## 📂 全部分类\n")
         for group in vite_sidebar:
@@ -123,7 +124,7 @@ def main(token, repo_name):
             for item in group['items']:
                 md.write(f"- [{item['text']}]({item['link']})\n")
 
-    print("✅ 任务全部完成！")
+    print("✅ 全量同步完成，准备构建 VitePress。")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

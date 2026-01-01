@@ -1,58 +1,60 @@
-name: Auto Sync Issues to Backup
+# -*- coding: utf-8 -*-
+import os, requests, re, shutil
+from collections import defaultdict
 
-on:
-  # 监听 Issue 的所有关键变动
-  issues:
-    types: [opened, edited, labeled, unlabeled, reopened, closed, deleted]
-  
-  # 每天凌晨自动跑一次，确保万无一失（可选）
-  schedule:
-    - cron: '0 0 * * *'
+TOKEN = os.environ.get('G_T')
+REPO = "miss-shiyi/miss-shiyi"
+
+def sync():
+    # 准备目录
+    backup_dir = "BACKUP"
+    wiki_temp = "wiki_temp"
+    for d in [backup_dir, wiki_temp]:
+        if os.path.exists(d): shutil.rmtree(d)
+        os.makedirs(d)
+
+    url = f"https://api.github.com/repos/{REPO}/issues?state=open"
+    headers = {"Authorization": f"token {TOKEN}"}
     
-  # 支持手动在 Actions 页面点按钮运行
-  workflow_dispatch:
+    try:
+        response = requests.get(url, headers=headers)
+        issues = response.json()
+        if not isinstance(issues, list): return
+        
+        readme_list = []
 
-# 必须声明权限，否则 Action 机器人无法提交代码
-permissions:
-  contents: write
+        for issue in issues:
+            if "pull_request" in issue: continue
+            
+            # 基础信息
+            labels = [l['name'] for l in issue['labels']]
+            cat = labels[0] if labels else "未分类"
+            date = issue['created_at'].split('T')[0]
+            clean_title = re.sub(r'[^\w\s-]', '', issue['title']).strip().replace(" ", "-")
+            
+            # --- 1. 写入主仓库 BACKUP (带分类文件夹) ---
+            cat_dir = os.path.join(backup_dir, cat)
+            if not os.path.exists(cat_dir): os.makedirs(cat_dir)
+            main_file_name = f"{date}-{clean_title}.md"
+            with open(os.path.join(cat_dir, main_file_name), "w", encoding="utf-8") as f:
+                f.write(f"# {issue['title']}\n\n{issue['body'] or ''}")
 
-jobs:
-  sync-job:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          # 确保拉取完整分支
-          fetch-depth: 0
+            # --- 2. 写入 Wiki 临时目录 (扁平化命名) ---
+            wiki_file_name = f"[{cat}] {date}-{clean_title}.md"
+            with open(os.path.join(wiki_temp, wiki_file_name), "w", encoding="utf-8") as f:
+                f.write(f"# {issue['title']}\n\n> **分类**: {cat} | **日期**: {date}\n\n---\n\n{issue['body'] or ''}")
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+            # --- 3. 准备 README 列表 ---
+            rel_path = f"BACKUP/{cat}/{main_file_name}".replace(" ", "%20")
+            readme_list.append(f"- [{issue['title']}]({rel_path}) — `{date}` ({cat})")
 
-      - name: Install dependencies
-        run: |
-          pip install requests
+        # 更新 README
+        with open("README.md", "w", encoding="utf-8") as f:
+            f.write(f"# 拾遗集\n\n> [📖 点击进入 Wiki 沉浸阅读](https://github.com/{REPO}/wiki)\n\n### 📝 最近备份\n\n" + "\n".join(readme_list))
 
-      - name: Run Sync Script
-        env:
-          # 把你在 Settings 里的 Secret 映射进来
-          G_T: ${{ secrets.G_T }}
-        run: python sync.py
+        print("✅ 脚本执行完成")
+    except Exception as e:
+        print(f"❌ 错误: {e}")
 
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 添加 README 和 BACKUP 目录的所有变动
-          git add README.md BACKUP/
-          
-          # 只有在有变化时才执行提交，防止 Action 报错
-          if git diff --staged --quiet; then
-            echo "No changes detected, skipping push."
-          else
-            git commit -m "chore: sync issues and update backup files"
-            git push
-          fi
+if __name__ == "__main__":
+    sync()

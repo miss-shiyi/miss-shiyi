@@ -1,95 +1,54 @@
-name: Generate GitBlog & Deploy VitePress
+name: Deploy Hugo Site
 
 on:
   issues:
-    types: [opened, edited, labeled, unlabeled, deleted, closed, reopened]
-  issue_comment:
-    types: [created, edited, deleted]
+    types: [opened, edited, labeled, unlabeled, deleted]
   push:
     branches:
-      - master
       - main
-    paths:
-      - 'main.py'
-      - '.github/workflows/*.yml'
   workflow_dispatch:
 
-# 核心权限设置：允许修改仓库内容并部署 Pages
 permissions:
   contents: write
   pages: write
   id-token: write
 
 jobs:
-  sync-and-build:
-    name: Sync Issues and Build Site
+  build-and-deploy:
     runs-on: ubuntu-latest
-    if: github.event.issue.user.login == github.repository_owner || github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'issue_comment'
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # --- 1. Python 环境：同步 Issue 生成 Markdown ---
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          cache: 'pip'
 
-      - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install PyGithub feedgen marko lxml
+      - name: Install Dependencies
+        run: pip install PyGithub
 
-      - name: Generate Content
-        env:
-          GH_TOKEN: ${{ secrets.G_T }}
-          GITHUB_NAME: ${{ github.repository_owner }}
-        run: |
-          python main.py "$GH_TOKEN" "${{ github.repository }}"
+      - name: Run Sync Script
+        run: python main.py ${{ secrets.G_T }} ${{ github.repository }}
 
-      # --- 2. 备份：将生成的 MD 文件推回仓库（保持 BACKUP 同步） ---
-      - name: Push updates
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          # 注意：VitePress 还需要 sidebar.json 等文件，确保脚本生成了它们
-          git add README.md BACKUP/*.md _sidebar.md feed.xml .vitepress/sidebar.json || echo "no sidebar.json"
-          git commit -m "chore: 🤖 自动更新博文 [skip ci]" || echo "nothing to commit"
-          git push || echo "nothing to push"
-
-      # --- 3. Node 环境：安装 VitePress 并构建静态网页 ---
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
         with:
-          node-version: 20
-          #cache: 'npm'
+          hugo-version: 'latest'
+          extended: true
 
       - name: Build Site
         run: |
-          if [ ! -f package.json ]; then
-            npm init -y
-            npm install vitepress vue
-          else
-            npm install
-          fi
-          npx vitepress build
+          # 动态拉取主题，防止子模块报错
+          mkdir -p themes
+          git clone --depth=1 https://github.com/adityatelange/hugo-PaperMod themes/PaperMod
+          hugo --minify
 
-      # --- 4. 上传构建产物 ---
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .vitepress/dist
+          path: ./public
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: sync-and-build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

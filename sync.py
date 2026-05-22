@@ -22,6 +22,9 @@ def sync():
     while True:
         url = f"https://api.github.com/repos/{REPO}/issues?state=open&per_page=100&page={page}"
         response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            raise RuntimeError(f"Request failed with status {response.status_code}: {response.text}")
+
         issues = response.json()
         if not issues or not isinstance(issues, list): break
         all_issues.extend(issues)
@@ -39,7 +42,7 @@ def sync():
         date = issue['created_at'].split('T')[0]
         
         # 清洗标题，移除系统非法字符
-        clean_title = re.sub(r'[\/\\:\*\?"<>\|]', '', issue['title']).strip().replace(" ", "-")
+        clean_title = re.sub(r'[\/\\:\\*\?"<>\|]', '', issue['title']).strip().replace(" ", "-")
         
         # A. 主仓库物理备份 (BACKUP/分类/日期-标题.md)
         cat_dir = os.path.join(backup_dir, cat)

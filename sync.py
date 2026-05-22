@@ -83,7 +83,8 @@ def sync():
                 f.write("\n</details>\n")
             f.write("\n")
 
-        f.write("---\n*最后全量更新: {issues[0]['updated_at'] if all_issues else 'N/A'}*")
+        # 删除无用的全量更新时间展示逻辑
+        f.write("---\n")
 
     # 5. 生成 index.md 和 .nojekyll (确保 GitHub Pages 渲染)
     with open("index.md", "w", encoding="utf-8") as f:
